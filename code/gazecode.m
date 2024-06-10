@@ -542,7 +542,7 @@ gv.lpaxpos = get(lpax,'position');
 % name of the file, Tobii Pro Glasses does not, so select it.
 switch gv.datatype
     case {'Tobii Pro Glasses 2','Tobii Pro Glasses 3'}
-        if ~isempty(gv.multfilm)
+        if isfield(gv, 'multfilm') %|| ~isempty(gv.multfilm)
             % now assuming just one pause
             gv.vidObj = VideoReader(gv.filmnaam{1});
             gv.vidObj2 = VideoReader(gv.filmnaam{2});
@@ -955,9 +955,9 @@ if ~skipdataload
                 if fixB(p) < 0
                     gv.bfr(p) = 1;
                 else
-                    gv.bfr(p) = find(data.video.scene.fts<=fixB(p)/1000,1,'last');
-                end
-                gv.efr(p) = find(data.video.scene.fts<=fixE(p)/1000,1,'last');       
+                    gv.bfr(p) = find(data.video.scene.fts<=fixB(p),1,'last');
+                end  
+                gv.efr(p) = find(data.video.scene.fts<=fixE(p),1,'last');     
             end
 
 %         case  {'Pupil Labs invisible (200 Hz)'}
@@ -975,7 +975,7 @@ if ~skipdataload
     gv.bfr(gv.bfr<1) = 1;
     gv.efr(gv.efr<1) = 1;
 
-    if ~isempty(gv.multfilm) % for Tobii Glasses only
+    if isfield(gv, 'multfilm') % for Tobii Glasses only
         % now assuming just one pause...
         gv.whichfilm = zeros(size(gv.bfr));
         gv.whichfilm(1:find(gv.efr<=data.video.scene.segframes(1) & gv.efr-gv.bfr>0,1,'last')) = 1;
@@ -1087,7 +1087,7 @@ end
 
 % function to show the current frame and fixation being labeled
 function showmainfr(hm,gv)
-if ~isempty(gv.multfilm)
+if isfield(gv, 'multfilm')
     if gv.whichfilm(gv.curfix) == 1
         try
             plaat = read(gv.vidObj,gv.mfr(gv.curfix));
